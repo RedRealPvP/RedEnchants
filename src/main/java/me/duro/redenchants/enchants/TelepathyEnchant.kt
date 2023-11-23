@@ -14,6 +14,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
 
 class TelepathyEnchant : RedEnchant(
     name = "telepathy",
@@ -33,9 +34,12 @@ class TelepathyEnchant : RedEnchant(
         if (!item.enchantments.containsKey(this)) return
 
         if (item.enchantments.containsKey(CustomEnchants.DECAPITATOR)) {
-            if (true) {
+            if (Math.random() < config.decapitator.dropChance) {
                 val skull = ItemStack(Material.PLAYER_HEAD)
-                // TODO: Set skull owner
+                val meta = (skull.itemMeta as SkullMeta).apply { owningPlayer = victim }
+                skull.itemMeta = meta
+
+                victim.inventory.addItem(skull)
             }
         }
 

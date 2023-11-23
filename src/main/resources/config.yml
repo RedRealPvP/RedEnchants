@@ -18,6 +18,11 @@ shotgun:
   # Angle subtracted from initial angle per shot in degrees based on enchant level
   # initial-angle - (angle-per-level * enchant-level) = angle between shots
   angle-per-level: 5
+  # Initial number of arrows fired
+  initial-arrows: 5
+  # Number of arrows added per enchant level
+  # initial-arrows + (arrows-per-level * enchant-level) = total number of arrows
+  arrows-per-level: 0
   # Flat damage multiplier on shotgun shots
   damage-multiplier: 2.0
 

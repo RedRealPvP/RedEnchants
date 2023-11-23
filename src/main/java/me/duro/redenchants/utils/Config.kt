@@ -17,6 +17,8 @@ data class ShotgunOptions(
     val cooldown: Int = 1,
     val initialAngle: Double = 10.0,
     val anglePerLevel: Double = 5.0,
+    val initialArrows: Int = 5,
+    val arrowsPerLevel: Int = 0,
     val damageMultiplier: Double = 2.0,
 )
 
@@ -60,6 +62,8 @@ class Config {
                 configFile.getInt("shotgun.cooldown", ShotgunOptions().cooldown),
                 configFile.getDouble("shotgun.initial-angle", ShotgunOptions().initialAngle),
                 configFile.getDouble("shotgun.angle-per-level", ShotgunOptions().anglePerLevel),
+                configFile.getInt("shotgun.initial-arrows", ShotgunOptions().initialArrows),
+                configFile.getInt("shotgun.arrows-per-level", ShotgunOptions().arrowsPerLevel),
                 configFile.getDouble("shotgun.damage-multiplier", ShotgunOptions().damageMultiplier),
             ),
             Decapitator(

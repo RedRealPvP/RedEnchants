@@ -37,15 +37,17 @@ class ShotgunEnchant : RedEnchant(
         val item = player.inventory.itemInMainHand
         if (!item.enchantments.containsKey(this)) return
 
+        e.isCancelled = true
+
         val powerLevel = item.getEnchantmentLevel(ARROW_DAMAGE)
         val damage = e.force * (1 + powerLevel * 0.5) * config.damageMultiplier
 
         val enchantLevel = item.getEnchantmentLevel(this)
         val spreadAngle = config.initialAngle - config.anglePerLevel * (enchantLevel - 1)
 
-        e.isCancelled = true
+        val numArrows = config.initialArrows + config.arrowsPerLevel * (enchantLevel - 1)
 
-        for (i in 1..5) {
+        for (i in 1..numArrows) {
             val direction = rotateVector(e.projectile.velocity, Math.toRadians(spreadAngle * i - spreadAngle * 3))
             spawnArrow(player.eyeLocation, direction, damage)
         }
