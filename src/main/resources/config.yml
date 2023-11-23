@@ -1,0 +1,26 @@
+telepathy:
+  # Message sent to killer when they kill a player with Telepathy enchant
+  # {m} = Minutes, {x} = X, {y} = Y, {z} = Z
+  message: "&cChest placed at X: {x}, Y: {y}, Z: {z} for &4{m} minutes!"
+  # Duration of chest in minutes
+  chest-duration: 5
+
+timber:
+  # Amount of logs to break per enchant level.
+  # amount-per-level * enchant-level = amount of logs broken
+  amount-per-level: 5
+
+shotgun:
+  # Cooldown between shotgun shots in seconds
+  cooldown: 1
+  # Initial angle between shotgun shots in degrees
+  initial-angle: 10
+  # Angle subtracted from initial angle per shot in degrees based on enchant level
+  # initial-angle - (angle-per-level * enchant-level) = angle between shots
+  angle-per-level: 5
+  # Flat damage multiplier on shotgun shots
+  damage-multiplier: 2.0
+
+decapitator:
+  # Chance to drop head on decapitation
+  drop-chance: 0.5
