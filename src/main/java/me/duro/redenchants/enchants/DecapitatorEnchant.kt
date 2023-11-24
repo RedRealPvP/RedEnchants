@@ -32,7 +32,7 @@ class DecapitatorEnchant : RedEnchant(
             val meta = (skull.itemMeta as SkullMeta).apply { owningPlayer = victim }
             skull.itemMeta = meta
 
-            victim.inventory.addItem(skull)
+            e.drops.add(skull)
         }
     }
 }
