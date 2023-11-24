@@ -1,6 +1,6 @@
 package me.duro.redenchants.enchants
 
-import me.duro.redenchants.utils.Config
+import me.duro.redenchants.RedEnchants
 import org.bukkit.Material
 import org.bukkit.enchantments.EnchantmentTarget
 import org.bukkit.entity.Player
@@ -15,7 +15,7 @@ class DecapitatorEnchant : RedEnchant(
     itemTarget = EnchantmentTarget.WEAPON,
     canEnchant = { i -> EnchantmentTarget.WEAPON.includes(i) },
 ), Listener {
-    private val config = Config.load().data.decapitator
+    private val config = RedEnchants.instance.config.data.decapitator
 
     @EventHandler
     fun onEntityDeath(e: EntityDeathEvent) {

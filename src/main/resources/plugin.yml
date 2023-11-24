@@ -7,3 +7,7 @@ commands:
   redenchants:
     description: RedEnchants Command
     aliases: [re]
+  souls:
+    description: Souls Command
+  horde:
+    description: Horde Command

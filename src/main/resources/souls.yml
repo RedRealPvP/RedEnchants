@@ -1,0 +1,5 @@
+# Storage for souls
+# players:
+#   %uuid%:
+#     souls: 0
+players:

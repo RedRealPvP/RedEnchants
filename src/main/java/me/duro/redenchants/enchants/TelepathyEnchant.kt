@@ -1,7 +1,6 @@
 package me.duro.redenchants.enchants
 
 import me.duro.redenchants.RedEnchants
-import me.duro.redenchants.utils.Config
 import me.duro.redenchants.utils.replaceColorCodes
 import org.bukkit.*
 import org.bukkit.block.BlockFace
@@ -21,7 +20,7 @@ class TelepathyEnchant : RedEnchant(
     itemTarget = EnchantmentTarget.BREAKABLE,
     canEnchant = { i -> EnchantmentTarget.TOOL.includes(i) || EnchantmentTarget.WEAPON.includes(i) },
 ), Listener {
-    private val config = Config.load().data
+    private val config = RedEnchants.instance.config.data
 
     @EventHandler
     fun onEntityDeath(e: EntityDeathEvent) {

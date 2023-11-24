@@ -1,7 +1,6 @@
 package me.duro.redenchants.enchants
 
 import me.duro.redenchants.RedEnchants
-import me.duro.redenchants.utils.Config
 import me.duro.redenchants.utils.getCoreProtect
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -49,7 +48,7 @@ class TimberEnchant : RedEnchant(
     canEnchant = { i -> validAxes.contains(i.type) },
 ), Listener {
     private val coreProtect = getCoreProtect()!!
-    private val config = Config.load().data.timber
+    private val config = RedEnchants.instance.config.data.timber
 
     @EventHandler
     fun onBlockBreak(e: BlockBreakEvent) {

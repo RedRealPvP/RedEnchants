@@ -1,7 +1,6 @@
 package me.duro.redenchants.enchants
 
 import me.duro.redenchants.RedEnchants
-import me.duro.redenchants.utils.Config
 import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.enchantments.EnchantmentTarget
@@ -21,7 +20,7 @@ class ShotgunEnchant : RedEnchant(
     itemTarget = EnchantmentTarget.BOW,
     canEnchant = { i -> EnchantmentTarget.BOW.includes(i) },
 ), Listener {
-    private val config = Config().load().data.shotgun
+    private val config = RedEnchants.instance.config.data.shotgun
     private val cooldowns = mutableMapOf<Player, Long>()
 
     @EventHandler
