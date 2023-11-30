@@ -1,5 +1,8 @@
-package me.duro.redenchants.enchants
+package me.duro.redenchants.enchants.impls.fishing
 
+import me.duro.redenchants.enchants.registry.RedEnchant
+import me.duro.redenchants.enchants.registry.RedEnchantRarity
+import me.duro.redenchants.enchants.registry.RedEnchantTarget
 import me.duro.redenchants.enchants.types.FishingEnchant
 import org.bukkit.Sound
 import org.bukkit.entity.Item

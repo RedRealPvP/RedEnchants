@@ -1,4 +1,4 @@
-package me.duro.redenchants.enchants
+package me.duro.redenchants.enchants.registry
 
 import io.papermc.paper.enchantments.EnchantmentRarity
 import me.duro.redenchants.RedEnchants

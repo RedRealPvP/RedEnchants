@@ -1,8 +1,14 @@
 package me.duro.redenchants.enchants.registry
 
 import me.duro.redenchants.RedEnchants
-import me.duro.redenchants.enchants.*
+import me.duro.redenchants.enchants.impls.bows.ShotgunEnchant
+import me.duro.redenchants.enchants.impls.fishing.DoubleCatchEnchant
+import me.duro.redenchants.enchants.impls.tools.TelepathyEnchant
+import me.duro.redenchants.enchants.impls.tools.TimberEnchant
+import me.duro.redenchants.enchants.impls.tools.VeinMinerEnchant
 import me.duro.redenchants.enchants.types.*
+import me.duro.redenchants.enchants.impls.weapons.DecapitatorEnchant
+import me.duro.redenchants.enchants.impls.weapons.VampiricEnchant
 import me.duro.redenchants.utils.addLore
 import me.duro.redenchants.utils.componentToString
 import me.duro.redenchants.utils.lowerTitleCase

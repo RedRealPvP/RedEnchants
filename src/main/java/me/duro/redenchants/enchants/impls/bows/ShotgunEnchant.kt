@@ -1,6 +1,9 @@
-package me.duro.redenchants.enchants
+package me.duro.redenchants.enchants.impls.bows
 
 import me.duro.redenchants.RedEnchants
+import me.duro.redenchants.enchants.registry.RedEnchant
+import me.duro.redenchants.enchants.registry.RedEnchantRarity
+import me.duro.redenchants.enchants.registry.RedEnchantTarget
 import me.duro.redenchants.enchants.types.BowEnchant
 import org.bukkit.Location
 import org.bukkit.Sound

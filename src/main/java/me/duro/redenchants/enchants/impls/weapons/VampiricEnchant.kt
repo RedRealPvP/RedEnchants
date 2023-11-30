@@ -1,6 +1,9 @@
-package me.duro.redenchants.enchants
+package me.duro.redenchants.enchants.impls.weapons
 
 import me.duro.redenchants.RedEnchants
+import me.duro.redenchants.enchants.registry.RedEnchant
+import me.duro.redenchants.enchants.registry.RedEnchantRarity
+import me.duro.redenchants.enchants.registry.RedEnchantTarget
 import me.duro.redenchants.enchants.types.CombatEnchant
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
@@ -8,7 +11,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.inventory.ItemStack
-import java.lang.Math.random
 
 private val config = RedEnchants.instance.config.data.vampiric
 private fun triggerChance(level: Int) = config.chancePerLevel * level
@@ -29,7 +31,7 @@ class VampiricEnchant : RedEnchant(
         val health = damager.health
         val maxHealth = damager.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 20.0
 
-        if (health == maxHealth || triggerChance(level) < random()) return false
+        if (health == maxHealth || triggerChance(level) < Math.random()) return false
 
         val healthEvent = EntityRegainHealthEvent(
             damager, healAmount(level), EntityRegainHealthEvent.RegainReason.CUSTOM
