@@ -1,58 +1,61 @@
 package me.duro.redenchants.enchants
 
 import me.duro.redenchants.RedEnchants
+import me.duro.redenchants.enchants.types.BowEnchant
 import org.bukkit.Location
 import org.bukkit.Sound
-import org.bukkit.enchantments.EnchantmentTarget
 import org.bukkit.entity.AbstractArrow.PickupStatus
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
+import org.bukkit.entity.Projectile
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
+import org.bukkit.event.entity.ProjectileHitEvent
+import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
+import java.lang.Math.toRadians
 import kotlin.math.cos
 import kotlin.math.sin
 
+private val config = RedEnchants.instance.config.data.shotgun
+private fun spreadAngle(level: Int) = config.initialAngle - config.anglePerLevel * (level - 1)
+
 class ShotgunEnchant : RedEnchant(
     name = "shotgun",
+    description = { l -> "Shoots 5 arrows at once with a ${spreadAngle(l)}° angle." },
     maxLevel = 2,
-    itemTarget = EnchantmentTarget.BOW,
-    canEnchant = { i -> EnchantmentTarget.BOW.includes(i) },
-), Listener {
-    private val config = RedEnchants.instance.config.data.shotgun
+    canEnchant = { i -> RedEnchantTarget.BOW.match(i) },
+    enchantRarity = RedEnchantRarity.FABULOUS,
+), BowEnchant {
     private val cooldowns = mutableMapOf<Player, Long>()
 
-    @EventHandler
-    fun onBowShoot(e: EntityShootBowEvent) {
-        val player = e.entity
+    override fun onShoot(event: EntityShootBowEvent, shooter: LivingEntity, bow: ItemStack, level: Int): Boolean {
+        if (shooter !is Player) return false
 
-        if (player !is Player) return
-
-        if (cooldowns.containsKey(player) && System.currentTimeMillis() - cooldowns[player]!! < 1000) {
-            return
+        if (cooldowns.containsKey(shooter) && System.currentTimeMillis() - cooldowns[shooter]!! < 1000) {
+            return false
         }
 
-        val item = player.inventory.itemInMainHand
-        if (!item.enchantments.containsKey(this)) return
+        event.isCancelled = true
 
-        e.isCancelled = true
+        val powerLevel = bow.getEnchantmentLevel(ARROW_DAMAGE)
+        val damage = event.force * (1 + powerLevel * 0.5) * config.damageMultiplier
 
-        val powerLevel = item.getEnchantmentLevel(ARROW_DAMAGE)
-        val damage = e.force * (1 + powerLevel * 0.5) * config.damageMultiplier
-
-        val enchantLevel = item.getEnchantmentLevel(this)
-        val spreadAngle = config.initialAngle - config.anglePerLevel * (enchantLevel - 1)
-
+        val enchantLevel = bow.getEnchantmentLevel(this)
         val numArrows = config.initialArrows + config.arrowsPerLevel * (enchantLevel - 1)
 
         for (i in 1..numArrows) {
-            val direction = rotateVector(e.projectile.velocity, Math.toRadians(spreadAngle * i - spreadAngle * 3))
-            spawnArrow(player.eyeLocation, direction, damage)
+            val direction = rotateVector(
+                event.projectile.velocity, toRadians(spreadAngle(enchantLevel) * i - spreadAngle(enchantLevel) * 3)
+            )
+            spawnArrow(shooter.eyeLocation, direction, damage)
         }
 
-        cooldowns[player] = System.currentTimeMillis()
-        startCooldownTimer(player)
+        cooldowns[shooter] = System.currentTimeMillis()
+        startCooldownTimer(shooter)
+
+        return true
     }
 
     private fun rotateVector(vector: Vector, angle: Double): Vector {
@@ -75,4 +78,17 @@ class ShotgunEnchant : RedEnchant(
             }
         }.runTaskLater(RedEnchants.instance, config.cooldown * 20L)
     }
+
+    override fun onHit(
+        event: ProjectileHitEvent, shooter: LivingEntity, projectile: Projectile, bow: ItemStack, level: Int
+    ) = false
+
+    override fun onDamage(
+        event: EntityDamageByEntityEvent,
+        projectile: Projectile,
+        shooter: LivingEntity,
+        victim: LivingEntity,
+        weapon: ItemStack,
+        level: Int
+    ) = false
 }

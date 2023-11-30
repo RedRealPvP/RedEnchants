@@ -1,80 +1,54 @@
 package me.duro.redenchants.enchants
 
 import me.duro.redenchants.RedEnchants
+import me.duro.redenchants.enchants.types.BlockDropEnchant
+import me.duro.redenchants.enchants.types.DeathEnchant
 import me.duro.redenchants.utils.replaceColorCodes
 import org.bukkit.*
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Chest
 import org.bukkit.block.Container
-import org.bukkit.enchantments.EnchantmentTarget
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
-import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.SkullMeta
 
 class TelepathyEnchant : RedEnchant(
     name = "telepathy",
-    itemTarget = EnchantmentTarget.BREAKABLE,
-    canEnchant = { i -> EnchantmentTarget.TOOL.includes(i) || EnchantmentTarget.WEAPON.includes(i) },
-), Listener {
+    description = { _ -> "Moves all blocks loot directly to your inventory." },
+    canEnchant = { i -> RedEnchantTarget.TOOL.match(i) || RedEnchantTarget.SWORD.match(i) },
+    enchantRarity = RedEnchantRarity.COMMON,
+), BlockDropEnchant, DeathEnchant {
     private val config = RedEnchants.instance.config.data
 
-    @EventHandler
-    fun onEntityDeath(e: EntityDeathEvent) {
-        if (e.entity.killer !is Player || e.entity !is Player) return
+    override fun onDrop(event: BlockDropItemEvent, player: LivingEntity, item: ItemStack, level: Int): Boolean {
+        if (player !is Player || player.gameMode != GameMode.SURVIVAL || player.inventory.firstEmpty() == -1 || event.block.state is Container || event.items.isEmpty()) return false
 
-        val player = e.entity.killer as Player
-        val victim = e.entity as Player
-        val item = player.inventory.itemInMainHand
+        event.items.forEach { player.inventory.addItem(it.itemStack) }
+        event.items.clear()
 
-        if (!item.enchantments.containsKey(this)) return
+        player.playSound(event.block.location, Sound.ENTITY_ITEM_PICKUP, 0.3f, 1.0f)
+        return true
+    }
 
-        if (item.enchantments.containsKey(CustomEnchants.DECAPITATOR)) {
-            if (Math.random() < config.decapitator.dropChance) {
-                val skull = ItemStack(Material.PLAYER_HEAD)
-                val meta = (skull.itemMeta as SkullMeta).apply { owningPlayer = victim }
-                skull.itemMeta = meta
+    override fun onKill(
+        event: EntityDeathEvent, entity: LivingEntity, killer: Player, weapon: ItemStack?, level: Int
+    ): Boolean {
+        if (entity !is Player) return false
 
-                victim.inventory.addItem(skull)
-            }
-        }
+        placeChest(entity)
+        event.drops.clear()
 
-        placeChest(victim)
-        e.drops.clear()
-
-        player.sendMessage(
+        killer.sendMessage(
             replaceColorCodes(
-                config.telepathy.message
-                    .replace("{x}", victim.location.blockX.toString())
-                    .replace("{y}", victim.location.blockY.toString())
-                    .replace("{z}", victim.location.blockZ.toString())
+                config.telepathy.message.replace("{x}", entity.location.blockX.toString())
+                    .replace("{y}", entity.location.blockY.toString()).replace("{z}", entity.location.blockZ.toString())
                     .replace("{m}", config.telepathy.chestDuration.toString())
             )
         )
-    }
 
-    @EventHandler
-    fun onBlockBreak(e: BlockBreakEvent) {
-        val player = e.player
-        val item = player.inventory.itemInMainHand
-
-        if (
-            !item.enchantments.containsKey(this)
-            || player.gameMode != GameMode.SURVIVAL
-            || player.inventory.firstEmpty() == -1
-            || e.block.state is Container
-        ) return
-
-        e.isDropItems = false
-
-        val drops = e.block.getDrops(item)
-        if (drops.isEmpty()) return
-
-        drops.forEach { player.inventory.addItem(it) }
-        player.playSound(e.block.location, Sound.ENTITY_ITEM_PICKUP, 0.3f, 1.0f)
+        return true
     }
 
     private fun placeChest(player: Player) {
@@ -83,8 +57,7 @@ class TelepathyEnchant : RedEnchant(
         if (location == null) {
             player.inventory.forEach {
                 player.world.dropItem(
-                    player.location,
-                    it
+                    player.location, it
                 )
             }
 
@@ -137,4 +110,6 @@ class TelepathyEnchant : RedEnchant(
 
         return null
     }
+
+    override fun onDeath(event: EntityDeathEvent, entity: LivingEntity, item: ItemStack?, level: Int) = false
 }

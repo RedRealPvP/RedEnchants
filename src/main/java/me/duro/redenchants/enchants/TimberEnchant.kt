@@ -1,97 +1,63 @@
 package me.duro.redenchants.enchants
 
 import me.duro.redenchants.RedEnchants
-import me.duro.redenchants.utils.getCoreProtect
-import org.bukkit.GameMode
-import org.bukkit.Material
-import org.bukkit.Sound
+import me.duro.redenchants.enchants.registry.EnchantUtils
+import me.duro.redenchants.enchants.registry.EnchantUtils.safeBusyBreak
+import me.duro.redenchants.enchants.types.BlockBreakEnchant
+import org.bukkit.Tag
 import org.bukkit.block.Block
-import org.bukkit.enchantments.EnchantmentTarget
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
+import org.bukkit.block.BlockFace
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.inventory.meta.Damageable
 
-val validAxes = listOf(
-    Material.WOODEN_AXE,
-    Material.STONE_AXE,
-    Material.IRON_AXE,
-    Material.GOLDEN_AXE,
-    Material.DIAMOND_AXE,
-    Material.NETHERITE_AXE,
-)
-
-val validLogs = listOf(
-    Material.ACACIA_LOG,
-    Material.ACACIA_WOOD,
-    Material.BIRCH_LOG,
-    Material.BIRCH_WOOD,
-    Material.DARK_OAK_LOG,
-    Material.DARK_OAK_WOOD,
-    Material.JUNGLE_LOG,
-    Material.JUNGLE_WOOD,
-    Material.OAK_LOG,
-    Material.OAK_WOOD,
-    Material.SPRUCE_LOG,
-    Material.SPRUCE_WOOD,
-    Material.CRIMSON_STEM,
-    Material.CRIMSON_HYPHAE,
-    Material.WARPED_STEM,
-    Material.WARPED_HYPHAE,
-)
+private val config = RedEnchants.instance.config.data.timber
+private fun numToBreak(level: Int) = config.amountPerLevel * level
 
 class TimberEnchant : RedEnchant(
     name = "timber",
+    description = { l -> "Breaks ${numToBreak(l)} connected logs." },
+    canEnchant = { i -> RedEnchantTarget.AXE.match(i) },
     maxLevel = 3,
-    itemTarget = EnchantmentTarget.TOOL,
-    canEnchant = { i -> validAxes.contains(i.type) },
-), Listener {
-    private val coreProtect = getCoreProtect()!!
-    private val config = RedEnchants.instance.config.data.timber
+    enchantRarity = RedEnchantRarity.RARE,
+), BlockBreakEnchant {
+    override fun onBreak(event: BlockBreakEvent, player: LivingEntity, item: ItemStack, level: Int): Boolean {
+        if (player !is Player || !Tag.LOGS.values.contains(event.block.type) || player.isSneaking || EnchantUtils.isBusy) return false
 
-    @EventHandler
-    fun onBlockBreak(e: BlockBreakEvent) {
-        if (!validLogs.contains(e.block.type)) return
+        val block = event.block
 
-        if (coreProtect.blockLookup(e.block, (System.currentTimeMillis() / 1000L).toInt()).size > 0) return
+        if (block.getDrops(item).isEmpty()) return false
+        if (!Tag.LOGS.values.contains(block.type)) return false
 
-        val player = e.player
-        val item = player.inventory.itemInMainHand
-        val hasTelepathy = item.enchantments.containsKey(CustomEnchants.TELEPATHY)
-
-        if (!item.itemMeta.hasEnchant(this) || player.gameMode != GameMode.SURVIVAL) return
-
-        val numToBreak = item.itemMeta.getEnchantLevel(this) * config.amountPerLevel
-
-        val adjacentLogs = findAdjacentLogs(e.block).take(numToBreak)
-
-        object : BukkitRunnable() {
-            val iterator = adjacentLogs.iterator()
-
-            override fun run() {
-                if (iterator.hasNext()) {
-                    val block = iterator.next()
-
-                    if (hasTelepathy) {
-                        player.inventory.addItem(ItemStack(block.type))
-                        player.playSound(block.location, Sound.ENTITY_ITEM_PICKUP, 0.3f, 1.0f)
-                        block.type = Material.AIR
-                    } else {
-                        block.breakNaturally(item)
-                    }
-
-                    player.playSound(block.location, Sound.BLOCK_WOOD_BREAK, 0.3f, 1.0f)
-                } else {
-                    cancel()
-                }
-            }
-        }.runTaskTimer(RedEnchants.instance, 0L, 5L)
+        timberMine(player, event.block, item, level)
+        return true
     }
 
-    private fun findAdjacentLogs(block: Block, visited: MutableSet<Block> = mutableSetOf()): List<Block> {
-        val playerPlaced = coreProtect.blockLookup(block, (System.currentTimeMillis() / 1000L).toInt()).size > 0
-        val adjacentLogs = mutableListOf<Block>()
+    private fun timberMine(player: Player, block: Block, item: ItemStack, level: Int = 1) {
+        val logs = mutableSetOf<Block>()
+        val prepare = mutableSetOf<Block>().apply { addAll(findAdjacentLogs(block)) }
+        val durability = item.type.maxDurability - (item.itemMeta as Damageable).damage
+
+        val num = if (durability >= numToBreak(level)) numToBreak(level) else durability
+
+        while (logs.addAll(prepare) && logs.size < num) {
+            val nearby = mutableSetOf<Block>()
+            prepare.forEach { nearby.addAll(findAdjacentLogs(it)) }
+            prepare.clear()
+            prepare.addAll(nearby)
+        }
+
+        logs.remove(block)
+
+        logs.take(numToBreak(level) - 1).forEach {
+            safeBusyBreak(player, it)
+        }
+    }
+
+    private fun findAdjacentLogs(block: Block, visited: MutableSet<Block> = mutableSetOf()): Set<Block> {
+        val adjacentLogs = mutableSetOf<Block>()
 
         fun exploreAdjacent(b: Block) {
             visited.add(b)
@@ -103,7 +69,7 @@ class TimberEnchant : RedEnchant(
 
                         val relativeBlock = b.getRelative(horizontal, vertical, depth)
 
-                        if (!visited.contains(relativeBlock) && validLogs.contains(relativeBlock.type) && !playerPlaced) {
+                        if (!visited.contains(relativeBlock) && Tag.LOGS.values.contains(relativeBlock.type)) {
                             adjacentLogs.add(relativeBlock)
                             exploreAdjacent(relativeBlock)
                         }
@@ -114,6 +80,8 @@ class TimberEnchant : RedEnchant(
 
         exploreAdjacent(block)
 
-        return adjacentLogs
+        return adjacentLogs.apply {
+            addAll(BlockFace.entries.map { block.getRelative(it) }.filter { Tag.LOGS.values.contains(it.type) })
+        }
     }
 }

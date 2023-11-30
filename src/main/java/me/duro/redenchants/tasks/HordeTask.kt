@@ -11,25 +11,24 @@ import org.bukkit.scheduler.BukkitTask
 
 class HordeTask(private val center: Location, private val radius: Double) : BukkitRunnable() {
     private var task: BukkitTask? = null
+    private val config = RedEnchants.instance.config.data.horde
 
     init {
-        runTaskTimer(RedEnchants.instance, 0L, 20 * 20L)
+        runTaskTimer(RedEnchants.instance, 0L, config.interval * 360 * 20L)
     }
 
     override fun run() {
-        val locations = generateHordeLocations(center, radius, 25)
+        val locations = generateHordeLocations(center, 100.0, radius, 25)
 
-        RedEnchants.instance.server.broadcast(replaceColorCodes("&c&lA horde has spawned in the warzone!"))
+        RedEnchants.instance.server.broadcast(replaceColorCodes(config.messages.spawn))
 
-        locations.forEach {
-            spawnHorde(it)
-        }
+        locations.forEach { spawnHorde(it) }
 
         task = object : BukkitRunnable() {
             override fun run() {
                 removeHorde()
             }
-        }.runTaskLater(RedEnchants.instance, 10 * 20L)
+        }.runTaskLater(RedEnchants.instance, config.duration * 360 * 20L)
     }
 
     private fun removeHorde() {

@@ -2,6 +2,9 @@ name: RedEnchants
 version: '${version}'
 main: me.duro.redenchants.RedEnchants
 api-version: '1.18'
+depend:
+  - PlaceholderAPI
+  - Citizens
 
 commands:
   redenchants:

@@ -8,7 +8,6 @@ import java.util.UUID
 
 data class PlayerData(val soulsCount: Int = 0)
 
-@Suppress("UNUSED")
 class SoulsManager {
     private lateinit var data: MutableMap<UUID, PlayerData>
 

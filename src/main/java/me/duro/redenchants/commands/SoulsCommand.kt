@@ -34,7 +34,7 @@ class SoulsCommand : CommandExecutor, TabExecutor {
                 }
 
                 RedEnchants.instance.soulsManager.setSouls(player.uniqueId, args[2].toInt())
-                sender.sendMessage("Souls: ${RedEnchants.instance.soulsManager.getSouls(player.uniqueId)}")
+                sender.sendMessage(replaceColorCodes("&cSouls: ${RedEnchants.instance.soulsManager.getSouls(player.uniqueId)}"))
             }
 
             "add" -> {
@@ -71,11 +71,11 @@ class SoulsCommand : CommandExecutor, TabExecutor {
         val subCommands = listOf("get", "set", "add", "remove")
 
         if (args.size == 1) {
-            return subCommands.filter { it.startsWith(args[0]) }
+            return subCommands.filter { it.startsWith(args[0], true) }
         }
 
         if (args.size == 2) {
-            return players.filter { it.startsWith(args[1]) }
+            return players.filter { it.startsWith(args[1], true) }
         }
 
         return emptyList()

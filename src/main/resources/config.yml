@@ -1,3 +1,32 @@
+horde:
+  # Delay between horde spawns in minutes
+  interval: 120
+  # Mobs spawned in horde will despawn after this amount of time
+  duration: 60
+  # Spawn settings
+  spawn:
+    # Min/max amount of mobs to spawn per horde
+    amount:
+        min: 2
+        max: 4
+    # How many groups
+    groups: 25
+    # World to spawn horde in
+    world: world # Defaults to the first world in the server
+    # Coordinates to spawn horde at
+    coordinates:
+      x: -186.0
+      y: 88.0
+      z: 495.0
+    # Radius to spawn horde in
+    radius: 150
+  messages:
+    # Message sent to players when a horde spawns
+    spawn: "&c&lA horde has spawned in the warzone!"
+    # Message sent to players when they kill a horde member
+    # {souls} = Souls gained, {total} = Total souls
+    kill: "&cYou have slain a horde member and gained {souls} soul!\n&cYou now have {total} souls!"
+
 telepathy:
   # Message sent to killer when they kill a player with Telepathy enchant
   # {m} = Minutes, {x} = X, {y} = Y, {z} = Z

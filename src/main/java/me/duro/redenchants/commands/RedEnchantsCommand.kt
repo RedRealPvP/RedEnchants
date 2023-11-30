@@ -1,8 +1,12 @@
 package me.duro.redenchants.commands
 
-import me.duro.redenchants.enchants.CustomEnchants
+import me.duro.redenchants.enchants.RedEnchantRarity
+import me.duro.redenchants.enchants.registry.CustomEnchants
+import me.duro.redenchants.enchants.registry.CustomEnchants.generateEnchantBook
+import me.duro.redenchants.enchants.registry.CustomEnchants.randomEnchantBook
+import me.duro.redenchants.utils.componentToString
+import me.duro.redenchants.utils.lowerTitleCase
 import me.duro.redenchants.utils.replaceColorCodes
-import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -17,66 +21,84 @@ class RedEnchantsCommand : CommandExecutor, TabExecutor {
         }
 
         if (args?.size == 0) {
-            sender.sendMessage(replaceColorCodes("&cUsage: /$label <enchantment> [level]"))
+            sender.sendMessage(replaceColorCodes("&cUsage: /$label <give|book> [args]"))
             return true
         }
 
-        val enchant = CustomEnchants.allEnchants.find { it.key.key == args?.get(0) } ?: return true
-        val item = sender.inventory.itemInMainHand
-        val level = if (args?.size == 2) args[1].toInt() else 1
+        val subcommands = listOf("give", "book")
+        val subcommand = subcommands.find { it == (args?.get(0)) }
 
-        if (item.type == Material.AIR) {
-            sender.sendMessage(replaceColorCodes("&cYou must be holding an item."))
+        if (subcommand == null) {
+            sender.sendMessage(replaceColorCodes("&cUsage: /$label <give|book> [args]"))
             return true
         }
 
-        if (level > enchant.maxLevel) {
-            sender.sendMessage(replaceColorCodes("&cThe max level for this enchantment is ${enchant.maxLevel}."))
-            return true
+        when (subcommand) {
+            "give" -> {
+                val enchant = CustomEnchants.allEnchants.find { it.key.key == args?.get(1) }
+
+                if (enchant == null) {
+                    sender.sendMessage(replaceColorCodes("&cThat enchantment does not exist."))
+                    return true
+                }
+
+                val level = if (args?.size == 3) args[2].toInt() else 1
+
+                if (level > enchant.maxLevel) {
+                    sender.sendMessage(replaceColorCodes("&cThe max level for this enchantment is ${enchant.maxLevel}."))
+                    return true
+                }
+
+                sender.inventory.addItem(generateEnchantBook(enchant, level))
+
+                sender.sendMessage(replaceColorCodes("&7You have received a ${componentToString(enchant.displayName(level))}&7 enchantment!"))
+            }
+
+            "book" -> {
+                val rarity = RedEnchantRarity.entries.find { it.name.lowercase() == args?.get(1) }
+
+                if (rarity == null) {
+                    sender.sendMessage(replaceColorCodes("&cThat rarity does not exist."))
+                    return true
+                }
+
+                sender.inventory.addItem(randomEnchantBook(rarity))
+
+                sender.sendMessage(replaceColorCodes("&7You have received a random ${rarity.color()}${lowerTitleCase(rarity.name)}&7 enchantment book!"))
+            }
         }
-
-        if (!enchant.canEnchantItem(item)) {
-            sender.sendMessage(replaceColorCodes("&cThis item cannot be enchanted with ${enchant.key.key}."))
-            return true
-        }
-
-        if (item.enchantments.containsKey(enchant)) {
-            sender.sendMessage(replaceColorCodes("&cThis item already has ${enchant.key.key}."))
-            return true
-        }
-
-        if (item.enchantments.any { enchant.conflictsWith(it.key) }) {
-            sender.sendMessage(replaceColorCodes("&cThis item conflicts with another enchantment."))
-            return true
-        }
-
-        item.addUnsafeEnchantment(enchant, level)
-
-        if (item.lore() != null) {
-            println("item has lore")
-            item.lore()!!.add(enchant.displayName(level))
-        } else {
-            item.lore(listOf(enchant.displayName(level)))
-        }
-
-        sender.sendMessage(replaceColorCodes("&aSuccessfully added ${enchant.key.key} to your item."))
 
         return true
     }
 
     override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        alias: String,
-        args: Array<out String>
+        sender: CommandSender, command: Command, alias: String, args: Array<out String>
     ): List<String> {
+        val subcommands = listOf("give", "book")
+
         if (args.size == 1) {
-            return CustomEnchants.allEnchants.map { it.key.key }.filter { it.startsWith(args[0]) }
+            return subcommands.filter { it.startsWith(args[0], true) }
         }
 
-        if (args.size == 2) {
-            val maxLvl = CustomEnchants.allEnchants.find { it.key.key == args[0] }?.maxLevel ?: return emptyList()
-            return (1..maxLvl).map { it.toString() }.filter { it.startsWith(args[1]) }
+        val subcommand = subcommands.find { it.equals(args[0], true) } ?: return emptyList()
+
+        when (subcommand) {
+            "give" -> {
+                if (args.size == 2) {
+                    return CustomEnchants.allEnchants.map { it.key.key }.filter { it.startsWith(args[1], true) }
+                }
+
+                if (args.size == 3) {
+                    val enchant = CustomEnchants.allEnchants.find { it.key.key == args[1] } ?: return emptyList()
+                    return (1..enchant.maxLevel).map { it.toString() }.filter { it.startsWith(args[2], true) }
+                }
+            }
+
+            "book" -> {
+                if (args.size == 2) {
+                    return RedEnchantRarity.entries.map { it.name.lowercase() }.filter { it.startsWith(args[1], true) }
+                }
+            }
         }
 
         return emptyList()

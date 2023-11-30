@@ -20,12 +20,21 @@ repositories {
         name = "playpro-repo"
         url = "https://maven.playpro.com"
     }
+    maven {
+        url = "https://repo.extendedclip.com/content/repositories/placeholderapi/"
+    }
+    maven {
+        name = "citizens-repo"
+        url = "https://repo.minebench.de/"
+    }
 }
 
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT"
+    compileOnly "me.clip:placeholderapi:2.11.5"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "net.coreprotect:coreprotect:22.2"
+    implementation "net.citizensnpcs:citizensapi:2.0.30-SNAPSHOT"
 }
 
 def targetJavaVersion = 17

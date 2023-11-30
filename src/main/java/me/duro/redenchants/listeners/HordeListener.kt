@@ -1,6 +1,8 @@
 package me.duro.redenchants.listeners
 
 import me.duro.redenchants.RedEnchants
+import me.duro.redenchants.items.hordeFlare
+import me.duro.redenchants.tasks.HordeTask
 import me.duro.redenchants.utils.replaceColorCodes
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -8,6 +10,7 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.Particle
 import org.bukkit.Sound
+import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
@@ -16,11 +19,16 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.event.inventory.CraftItemEvent
+import org.bukkit.event.inventory.PrepareItemCraftEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import java.lang.Math.random
+import kotlin.math.pow
 
 class HordeListener : Listener {
+    private val config = RedEnchants.instance.config.data.horde
+
     @EventHandler
     fun onEntityDeath(e: EntityDeathEvent) {
         if (e.entity.killer !is Player || !isHordeMob(e.entity)) return
@@ -40,22 +48,52 @@ class HordeListener : Listener {
 
             RedEnchants.instance.soulsManager.addSouls(e.entity.killer!!.uniqueId, 1)
 
-            player.sendMessage(replaceColorCodes("&cYou defeated a horde mob and gained 1 soul."))
-            player.sendMessage(replaceColorCodes("&cSouls: ${RedEnchants.instance.soulsManager.getSouls(player.uniqueId)}"))
+            player.sendMessage(
+                replaceColorCodes(
+                    config.messages.kill.replace("{souls}", "1")
+                        .replace("{total}", "${RedEnchants.instance.soulsManager.getSouls(player.uniqueId)}")
+                )
+            )
         }
     }
 
     @EventHandler
-    fun onCraft(e: CraftItemEvent) {
-        val item = e.currentItem ?: return
+    fun onCraftPrepare(e: PrepareItemCraftEvent) {
+        val items = e.inventory.matrix
 
-        if (item.type == Material.NETHER_STAR && item.itemMeta?.customModelData == 1) {
+        if (items.any { it != null && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 1 }) {
+            e.inventory.result = null
+        }
+    }
+
+    @EventHandler
+    fun onRightClick(e: PlayerInteractEvent) {
+        val item = e.item ?: return
+
+        if (item == hordeFlare) {
             e.isCancelled = true
+
+            val player = e.player
+            item.subtract(1)
+
+            player.playSound(player.location, Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 1.0f)
+
+            val center = Location(
+                Bukkit.getWorld(config.spawn.world) ?: Bukkit.getWorlds()[0],
+                config.spawn.center.first,
+                config.spawn.center.second,
+                config.spawn.center.third
+            )
+
+            HordeTask(
+                center,
+                config.spawn.radius,
+            )
         }
     }
 
     companion object {
-        private val hordeKey = NamespacedKey(RedEnchants.instance, "isHorde")
+        val hordeKey = NamespacedKey(RedEnchants.instance, "isHorde")
         private val hordeMobTypes = listOf(
             EntityType.ZOMBIE,
             EntityType.HUSK,
@@ -78,26 +116,22 @@ class HordeListener : Listener {
             val hordeRadius = 3.0
 
             for (i in 0..hordeSize) {
-                val x = (location.x + (Math.random() * hordeRadius * 2) - hordeRadius).toInt()
-                val z = (location.z + (Math.random() * hordeRadius * 2) - hordeRadius).toInt()
+                val x = (location.x + (random() * hordeRadius * 2) - hordeRadius).toInt()
+                val z = (location.z + (random() * hordeRadius * 2) - hordeRadius).toInt()
                 val y = location.world.getHighestBlockYAt(x, z)
 
-                val hordeMembers = listOf("Guard", "Soldier", "Warrior", "Assassin", "Knight")
-
                 spawnHordeMob(
-                    Location(location.world, x.toDouble(), y.toDouble() + 2, z.toDouble()),
-                    if (i == 0) "&4&lHorde Leader" else "&c&lHorde ${hordeMembers.random()}",
-                    i == 0
+                    Location(location.world, x.toDouble(), y.toDouble() + 2, z.toDouble()), i == 0
                 )
             }
         }
 
-        private fun spawnHordeMob(location: Location, name: String = "&c&lHorde Guard", isLeader: Boolean = false) {
+        private fun spawnHordeMob(location: Location, isLeader: Boolean = false) {
             val mobType = hordeMobTypes.random()
             val mob = location.world.spawnEntity(location, mobType) as LivingEntity
 
-            mob.customName(replaceColorCodes(name))
             mob.removeWhenFarAway = false
+            mob.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)?.baseValue = 0.3
 
             if (isLeader) {
                 val taskIds = mutableListOf<Int>()
@@ -128,28 +162,30 @@ class HordeListener : Listener {
         }
 
         fun generateHordeLocations(
-            center: Location,
-            radius: Double,
-            amount: Int,
-            maxSpawnHeight: Int = 170
+            center: Location, innerRadius: Double, outerRadius: Double, amount: Int
         ): List<Location> {
             val locations = mutableListOf<Location>()
 
-            for (i in 0 until amount) {
+            repeat(amount) {
                 var x: Double
                 var z: Double
                 var y: Double
 
                 do {
-                    x = center.x + Math.random() * radius * 2 - radius
-                    z = center.z + Math.random() * radius * 2 - radius
+                    x = center.x + random() * outerRadius * 2 - outerRadius
+                    z = center.z + random() * outerRadius * 2 - outerRadius
                     y = center.world.getHighestBlockYAt(x.toInt(), z.toInt()).toDouble()
-                } while (y > maxSpawnHeight)
+                } while (y > 170 || isWithinInnerRadius(center, x, z, innerRadius))
 
                 locations.add(Location(center.world, x, y, z))
             }
 
             return locations
+        }
+
+        private fun isWithinInnerRadius(center: Location, x: Double, z: Double, innerRadius: Double): Boolean {
+            val distanceSquared = (x - center.x).pow(2) + (z - center.z).pow(2)
+            return distanceSquared < innerRadius.pow(2)
         }
 
         private fun giveEnchantedArmor(entity: LivingEntity, material: Material) {
@@ -179,7 +215,7 @@ class HordeListener : Listener {
             weapon.addEnchantment(Enchantment.DAMAGE_ALL, sharpnessLevel)
             weapon.addEnchantment(Enchantment.DURABILITY, unbreakingLevel)
 
-            if (Math.random() < 0.5) weapon.addEnchantment(Enchantment.FIRE_ASPECT, 1)
+            if (random() < 0.5) weapon.addEnchantment(Enchantment.FIRE_ASPECT, 1)
 
             entity.equipment?.setItemInMainHand(weapon)
         }
@@ -193,7 +229,7 @@ class HordeListener : Listener {
             bow.addEnchantment(Enchantment.ARROW_DAMAGE, powerLevel)
             bow.addEnchantment(Enchantment.DURABILITY, unbreakingLevel)
 
-            if (Math.random() < 0.5) bow.addEnchantment(Enchantment.ARROW_FIRE, 1)
+            if (random() < 0.5) bow.addEnchantment(Enchantment.ARROW_FIRE, 1)
 
             entity.equipment?.setItemInMainHand(bow)
         }
