@@ -9,14 +9,11 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 
 class PassiveEnchantsTask : AbstractTask() {
-    private val passiveEnchants = mutableSetOf<Pair<PassiveEnchant, RedEnchant>>()
+    private val passiveEnchants = CustomEnchants.allEnchants.filterIsInstance<PassiveEnchant>().map {
+        Pair(it, it as RedEnchant)
+    }
     override val interval: Long = 20L
     override val async: Boolean = false
-
-    init {
-        passiveEnchants.addAll(CustomEnchants.allEnchants.filterIsInstance<PassiveEnchant>()
-            .map { Pair(it, it as RedEnchant) })
-    }
 
     override fun action() {
         if (passiveEnchants.isEmpty()) return
