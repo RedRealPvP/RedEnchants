@@ -15,6 +15,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
 
+
 private val validOres = mutableSetOf<Material>().apply {
     addAll(Tag.COAL_ORES.values)
     addAll(Tag.COPPER_ORES.values)
