@@ -1,7 +1,7 @@
 package me.duro.redenchants.npcs
 
 import me.duro.redenchants.enchants.registry.CustomEnchants.randomEnchantBook
-import me.duro.redenchants.enchants.registry.RedEnchantRarity
+import me.duro.redenchants.enchants.impls.RedEnchantRarity
 import me.duro.redenchants.items.enchantedPage
 import me.duro.redenchants.utils.addLore
 import me.duro.redenchants.utils.componentToString

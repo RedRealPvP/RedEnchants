@@ -65,6 +65,8 @@ class RedEnchants : JavaPlugin() {
             deregisterTrait(TraitInfo.create(SoulMerchant::class.java).withName("soul_merchant"))
             deregisterTrait(TraitInfo.create(Enchanter::class.java).withName("enchanter"))
         }
+
+        Bukkit.getScheduler().cancelTasks(this)
     }
 
     companion object {

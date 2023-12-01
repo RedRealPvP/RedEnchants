@@ -3,9 +3,9 @@ package me.duro.redenchants.enchants.impls.tools
 import me.duro.redenchants.RedEnchants
 import me.duro.redenchants.enchants.registry.EnchantUtils
 import me.duro.redenchants.enchants.registry.EnchantUtils.safeBusyBreak
-import me.duro.redenchants.enchants.registry.RedEnchant
-import me.duro.redenchants.enchants.registry.RedEnchantRarity
-import me.duro.redenchants.enchants.registry.RedEnchantTarget
+import me.duro.redenchants.enchants.impls.RedEnchant
+import me.duro.redenchants.enchants.impls.RedEnchantRarity
+import me.duro.redenchants.enchants.impls.RedEnchantTarget
 import me.duro.redenchants.enchants.types.BlockBreakEnchant
 import org.bukkit.Tag
 import org.bukkit.block.Block
@@ -23,8 +23,8 @@ class TimberEnchant : RedEnchant(
     name = "timber",
     description = { l -> "Breaks ${numToBreak(l)} connected logs." },
     canEnchant = { i -> RedEnchantTarget.AXE.match(i) },
-    maxLevel = 3,
     enchantRarity = RedEnchantRarity.RARE,
+    maxLevel = 3,
 ), BlockBreakEnchant {
     override fun onBreak(event: BlockBreakEvent, player: LivingEntity, item: ItemStack, level: Int): Boolean {
         if (player !is Player || !Tag.LOGS.values.contains(event.block.type) || player.isSneaking || EnchantUtils.isBusy) return false

@@ -5,7 +5,7 @@ import me.duro.redenchants.enchants.registry.CustomEnchants
 import me.duro.redenchants.enchants.registry.CustomEnchants.addEnchant
 import me.duro.redenchants.enchants.registry.CustomEnchants.generateEnchantBook
 import me.duro.redenchants.enchants.registry.CustomEnchants.randomEnchantBook
-import me.duro.redenchants.enchants.registry.RedEnchantRarity
+import me.duro.redenchants.enchants.impls.RedEnchantRarity
 import me.duro.redenchants.utils.*
 import org.bukkit.NamespacedKey
 import org.bukkit.Particle

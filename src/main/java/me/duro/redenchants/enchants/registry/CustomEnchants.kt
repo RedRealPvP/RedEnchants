@@ -1,6 +1,10 @@
 package me.duro.redenchants.enchants.registry
 
 import me.duro.redenchants.RedEnchants
+import me.duro.redenchants.enchants.impls.RedEnchant
+import me.duro.redenchants.enchants.impls.RedEnchantRarity
+import me.duro.redenchants.enchants.impls.armor.NocturnalEnchant
+import me.duro.redenchants.enchants.impls.armor.NourishEnchant
 import me.duro.redenchants.enchants.impls.bows.ShotgunEnchant
 import me.duro.redenchants.enchants.impls.fishing.DoubleCatchEnchant
 import me.duro.redenchants.enchants.impls.tools.TelepathyEnchant
@@ -9,6 +13,7 @@ import me.duro.redenchants.enchants.impls.tools.VeinMinerEnchant
 import me.duro.redenchants.enchants.types.*
 import me.duro.redenchants.enchants.impls.weapons.DecapitatorEnchant
 import me.duro.redenchants.enchants.impls.weapons.VampiricEnchant
+import me.duro.redenchants.tasks.PassiveEnchantsTask
 import me.duro.redenchants.utils.addLore
 import me.duro.redenchants.utils.componentToString
 import me.duro.redenchants.utils.lowerTitleCase
@@ -38,13 +43,28 @@ object CustomEnchants {
     val VEIN_MINER = VeinMinerEnchant()
     val VAMPIRIC = VampiricEnchant()
     val DOUBLE_CATCH = DoubleCatchEnchant()
+    val NOCTURNAL = NocturnalEnchant()
+    val NOURISH = NourishEnchant()
 
-    val allEnchants = listOf<RedEnchant>(TELEPATHY, TIMBER, SHOTGUN, DECAPITATOR, VEIN_MINER, VAMPIRIC, DOUBLE_CATCH)
+    val allEnchants = listOf<RedEnchant>(
+        TELEPATHY,
+        TIMBER,
+        SHOTGUN,
+        DECAPITATOR,
+        VEIN_MINER,
+        VAMPIRIC,
+        DOUBLE_CATCH,
+        NOCTURNAL,
+        NOURISH,
+    )
+
     val enchantsMap = hashMapOf<Class<out EnchantType>, MutableSet<in RedEnchant>>()
+    val passiveEnchantsTask = PassiveEnchantsTask()
 
     fun register() {
         allEnchants.forEach { registerEnchant(it) }
 
+        registerType(GenericEnchant::class.java)
         registerType(PassiveEnchant::class.java)
 
         registerWrapper(BlockBreakEvent::class.java, BlockBreakEnchant::class.java, DataGathers.BLOCK_BREAK)
@@ -62,6 +82,8 @@ object CustomEnchants {
         registerWrapper(EntityDeathEvent::class.java, DeathEnchant::class.java, DataGathers.ENTITY_DEATH)
         registerWrapper(PlayerFishEvent::class.java, FishingEnchant::class.java, DataGathers.FISHING)
         registerWrapper(PlayerInteractEvent::class.java, InteractEnchant::class.java, DataGathers.INTERACT)
+
+        passiveEnchantsTask.start()
     }
 
     private fun registerEnchantType(enchant: RedEnchant): Boolean {
@@ -78,7 +100,7 @@ object CustomEnchants {
     }
 
     fun <T : EnchantType> registerType(enchantClass: Class<T>) {
-        enchantsMap.computeIfAbsent(enchantClass) { HashSet() }
+        enchantsMap.computeIfAbsent(enchantClass) { mutableSetOf() }
     }
 
     fun <E : Event?, T : EnchantType> registerWrapper(

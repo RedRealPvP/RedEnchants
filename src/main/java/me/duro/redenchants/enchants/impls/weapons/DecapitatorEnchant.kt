@@ -1,8 +1,8 @@
 package me.duro.redenchants.enchants.impls.weapons
 
-import me.duro.redenchants.enchants.registry.RedEnchant
-import me.duro.redenchants.enchants.registry.RedEnchantRarity
-import me.duro.redenchants.enchants.registry.RedEnchantTarget
+import me.duro.redenchants.enchants.impls.RedEnchant
+import me.duro.redenchants.enchants.impls.RedEnchantRarity
+import me.duro.redenchants.enchants.impls.RedEnchantTarget
 import me.duro.redenchants.enchants.types.DeathEnchant
 import org.bukkit.Material
 import org.bukkit.Particle

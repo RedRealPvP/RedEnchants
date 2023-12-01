@@ -1,4 +1,4 @@
-package me.duro.redenchants.enchants.registry
+package me.duro.redenchants.enchants.impls
 
 import io.papermc.paper.enchantments.EnchantmentRarity
 import me.duro.redenchants.RedEnchants
@@ -41,7 +41,7 @@ enum class RedEnchantRarity {
 }
 
 enum class RedEnchantTarget {
-    HELMET, CHESTPLATE, LEGGINGS, BOOTS, SWORD, AXE, PICKAXE, SHOVEL, HOE, TOOL, BOW, FISHING_ROD;
+    HELMET, CHESTPLATE, LEGGINGS, BOOTS, SWORD, AXE, PICKAXE, SHOVEL, HOE, TOOL, BOW, FISHING_ROD, TRIDENT;
 
     fun match(item: ItemStack): Boolean {
         val axes = arrayOf(
@@ -93,6 +93,7 @@ enum class RedEnchantTarget {
             TOOL -> EnchantmentTarget.TOOL.includes(item)
             BOW -> EnchantmentTarget.BOW.includes(item)
             FISHING_ROD -> EnchantmentTarget.FISHING_ROD.includes(item)
+            TRIDENT -> EnchantmentTarget.TRIDENT.includes(item)
         }
     }
 }

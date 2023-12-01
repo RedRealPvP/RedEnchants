@@ -1,9 +1,9 @@
 package me.duro.redenchants.enchants.impls.tools
 
 import me.duro.redenchants.RedEnchants
-import me.duro.redenchants.enchants.registry.RedEnchant
-import me.duro.redenchants.enchants.registry.RedEnchantRarity
-import me.duro.redenchants.enchants.registry.RedEnchantTarget
+import me.duro.redenchants.enchants.impls.RedEnchant
+import me.duro.redenchants.enchants.impls.RedEnchantRarity
+import me.duro.redenchants.enchants.impls.RedEnchantTarget
 import me.duro.redenchants.enchants.types.BlockDropEnchant
 import me.duro.redenchants.enchants.types.DeathEnchant
 import me.duro.redenchants.utils.replaceColorCodes
@@ -26,7 +26,7 @@ class TelepathyEnchant : RedEnchant(
     private val config = RedEnchants.instance.config.data
 
     override fun onDrop(event: BlockDropItemEvent, player: LivingEntity, item: ItemStack, level: Int): Boolean {
-        if (player !is Player || player.gameMode != GameMode.SURVIVAL || player.inventory.firstEmpty() == -1 || event.block.state is Container || event.items.isEmpty()) return false
+        if (player !is Player || player.inventory.firstEmpty() == -1 || event.block.state is Container || event.items.isEmpty()) return false
 
         event.items.forEach { player.inventory.addItem(it.itemStack) }
         event.items.clear()

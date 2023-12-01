@@ -1,9 +1,9 @@
 package me.duro.redenchants.enchants.impls.weapons
 
 import me.duro.redenchants.RedEnchants
-import me.duro.redenchants.enchants.registry.RedEnchant
-import me.duro.redenchants.enchants.registry.RedEnchantRarity
-import me.duro.redenchants.enchants.registry.RedEnchantTarget
+import me.duro.redenchants.enchants.impls.RedEnchant
+import me.duro.redenchants.enchants.impls.RedEnchantRarity
+import me.duro.redenchants.enchants.impls.RedEnchantTarget
 import me.duro.redenchants.enchants.types.CombatEnchant
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
@@ -22,8 +22,8 @@ class VampiricEnchant : RedEnchant(
         "${(triggerChance(l) * 100).toInt()}% chance to heal ${healAmount(l)} HP on hit."
     },
     canEnchant = { i -> RedEnchantTarget.SWORD.match(i) },
-    maxLevel = 4,
     enchantRarity = RedEnchantRarity.RARE,
+    maxLevel = 4,
 ), CombatEnchant {
     override fun onAttack(
         event: EntityDamageByEntityEvent, damager: LivingEntity, victim: LivingEntity, weapon: ItemStack, level: Int

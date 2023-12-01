@@ -11,7 +11,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.inventory.meta.ItemMeta
 import java.util.*
-import java.util.function.Consumer
 
 object EnchantUtils {
     var isBusy = false
@@ -37,7 +36,7 @@ object EnchantUtils {
 
     private fun <T : EnchantType?> getExcellents(item: ItemStack, clazz: Class<T>): Map<T, Int> {
         val map: MutableMap<T, Int> = HashMap()
-        getAll(item).forEach { (enchantment: Enchantment, level: Int) ->
+        getAll(item).forEach { (enchantment, level) ->
             val enchant = CustomEnchants.allEnchants.find { it.key == enchantment.key }
             if (enchant == null || !clazz.isAssignableFrom(enchant::class.java)) return@forEach
             map[clazz.cast(enchant)] = level
@@ -70,11 +69,14 @@ object EnchantUtils {
         entity: LivingEntity, clazz: Class<T>, vararg slots: EquipmentSlot
     ): Map<ItemStack, MutableMap<T, Int>> {
         val map: MutableMap<ItemStack, MutableMap<T, Int>> = HashMap()
-        getEnchantedEquipment(entity, *slots).values.forEach(Consumer { item: ItemStack ->
-            map.computeIfAbsent(
-                item
-            ) { LinkedHashMap() }.putAll(getExcellents(item, clazz))
-        })
+        val equipment = getEnchantedEquipment(entity, *slots)
+
+        equipment.forEach { (_, item) ->
+            val enchants = getExcellents(item, clazz)
+            if (enchants.isEmpty()) return@forEach
+            map[item] = enchants as MutableMap<T, Int>
+        }
+
         return map
     }
 }

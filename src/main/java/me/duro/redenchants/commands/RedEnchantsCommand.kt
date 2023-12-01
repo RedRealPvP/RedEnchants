@@ -1,6 +1,6 @@
 package me.duro.redenchants.commands
 
-import me.duro.redenchants.enchants.registry.RedEnchantRarity
+import me.duro.redenchants.enchants.impls.RedEnchantRarity
 import me.duro.redenchants.enchants.registry.CustomEnchants
 import me.duro.redenchants.enchants.registry.CustomEnchants.generateEnchantBook
 import me.duro.redenchants.enchants.registry.CustomEnchants.randomEnchantBook

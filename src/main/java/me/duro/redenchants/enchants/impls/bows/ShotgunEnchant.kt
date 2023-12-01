@@ -1,9 +1,9 @@
 package me.duro.redenchants.enchants.impls.bows
 
 import me.duro.redenchants.RedEnchants
-import me.duro.redenchants.enchants.registry.RedEnchant
-import me.duro.redenchants.enchants.registry.RedEnchantRarity
-import me.duro.redenchants.enchants.registry.RedEnchantTarget
+import me.duro.redenchants.enchants.impls.RedEnchant
+import me.duro.redenchants.enchants.impls.RedEnchantRarity
+import me.duro.redenchants.enchants.impls.RedEnchantTarget
 import me.duro.redenchants.enchants.types.BowEnchant
 import org.bukkit.Location
 import org.bukkit.Sound
@@ -27,9 +27,9 @@ private fun spreadAngle(level: Int) = config.initialAngle - config.anglePerLevel
 class ShotgunEnchant : RedEnchant(
     name = "shotgun",
     description = { l -> "Shoots 5 arrows at once with a ${spreadAngle(l)}° angle." },
-    maxLevel = 2,
     canEnchant = { i -> RedEnchantTarget.BOW.match(i) },
     enchantRarity = RedEnchantRarity.FABULOUS,
+    maxLevel = 2,
 ), BowEnchant {
     private val cooldowns = mutableMapOf<Player, Long>()
 

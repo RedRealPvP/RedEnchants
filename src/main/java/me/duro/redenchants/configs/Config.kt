@@ -10,6 +10,7 @@ data class ConfigFile(
     val shotgun: ShotgunConfig = ShotgunConfig(),
     val timber: TimberConfig = TimberConfig(),
     val vampiric: VampiricConfig = VampiricConfig(),
+    val nourish: NourishConfig = NourishConfig(),
 )
 
 class Config {
@@ -30,6 +31,7 @@ class Config {
             shotgun = shotgunOptions(configFile),
             timber = timberOptions(configFile),
             vampiric = vampiricOptions(configFile),
+            nourish = nourishOptions(configFile),
         )
 
         return this
