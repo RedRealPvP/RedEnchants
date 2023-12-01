@@ -3,6 +3,7 @@ package me.duro.redenchants.enchants.types
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 
+@Suppress("Unused")
 interface Periodic {
     val periodImplementation: Periodic
     val interval: Long
@@ -19,7 +20,7 @@ interface Periodic {
     }
 }
 
-
+@Suppress("Unused")
 interface PassiveEnchant : EnchantType {
     fun onTrigger(entity: LivingEntity, item: ItemStack, level: Int): Boolean
 }

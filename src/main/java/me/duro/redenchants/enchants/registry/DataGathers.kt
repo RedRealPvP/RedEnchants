@@ -13,7 +13,6 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 
-
 object DataGathers {
     val BLOCK_BREAK = object : DataGather<BlockBreakEvent, BlockBreakEnchant>() {
         override fun checkPriority(enchant: BlockBreakEnchant, priority: EventPriority): Boolean {
@@ -248,7 +247,5 @@ object DataGathers {
         override fun getEntity(event: PlayerInteractEvent?): LivingEntity? {
             return event?.player
         }
-
-
     }
 }

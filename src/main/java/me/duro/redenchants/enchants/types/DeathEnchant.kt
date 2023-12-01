@@ -6,7 +6,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.ItemStack
 
-
 interface DeathEnchant : EnchantType {
     fun onDeath(event: EntityDeathEvent, entity: LivingEntity, item: ItemStack?, level: Int): Boolean
 

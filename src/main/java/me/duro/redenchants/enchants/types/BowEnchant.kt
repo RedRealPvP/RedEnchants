@@ -8,7 +8,6 @@ import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.inventory.ItemStack
 
-
 interface BowEnchant : EnchantType {
     fun onShoot(event: EntityShootBowEvent, shooter: LivingEntity, bow: ItemStack, level: Int): Boolean
 

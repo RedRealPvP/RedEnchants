@@ -29,7 +29,6 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-
 @Suppress("MemberVisibilityCanBePrivate")
 object CustomEnchants {
     val TELEPATHY = TelepathyEnchant()

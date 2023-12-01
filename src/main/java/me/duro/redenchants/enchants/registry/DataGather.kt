@@ -7,7 +7,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 
-
 abstract class DataGather<E : Event?, T : EnchantType?> {
     abstract fun getEntity(event: E?): LivingEntity?
     abstract fun getEnchantSlots(event: E): Array<EquipmentSlot>

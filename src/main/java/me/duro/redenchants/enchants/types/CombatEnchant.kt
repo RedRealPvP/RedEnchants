@@ -5,7 +5,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.inventory.ItemStack
 
-
 interface CombatEnchant : EnchantType {
     fun onAttack(
         event: EntityDamageByEntityEvent, damager: LivingEntity, victim: LivingEntity, weapon: ItemStack, level: Int
