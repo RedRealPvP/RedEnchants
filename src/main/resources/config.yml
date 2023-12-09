@@ -58,3 +58,13 @@ shotgun:
 decapitator:
   # Chance to drop head on decapitation
   drop-chance: 0.5
+
+double-catch:
+  chance-per-level: 0.1
+
+nourish:
+  amount-per-level: 1
+
+syphon:
+  health-per-level: 0.25
+  chance-per-level: 0.05
