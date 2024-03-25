@@ -115,7 +115,7 @@ open class RedEnchant(
     val description: (Int) -> String,
     private val maxLevel: Int = 1,
     private val conflictEnchants: List<RedEnchant> = emptyList(),
-    val canEnchant: (ItemStack) -> Boolean = { _ -> true },
+    val canEnchant: (ItemStack) -> Boolean = { true },
     private val activeSlots: List<EquipmentSlot> = listOf(EquipmentSlot.HAND),
     val enchantRarity: RedEnchantRarity = RedEnchantRarity.COMMON,
 ) : Enchantment(NamespacedKey.minecraft(name)) {
@@ -155,7 +155,11 @@ open class RedEnchant(
     }
 
     override fun canEnchantItem(item: ItemStack): Boolean {
-        return if (item.hasItemMeta() && item.itemMeta.hasEnchants()) canEnchant(item) && item.itemMeta!!.enchants.keys.none { conflictsWith(it) }
+        return if (item.hasItemMeta() && item.itemMeta.hasEnchants()) canEnchant(item) && item.itemMeta!!.enchants.keys.none {
+            conflictsWith(
+                it
+            )
+        }
         else canEnchant(item)
     }
 

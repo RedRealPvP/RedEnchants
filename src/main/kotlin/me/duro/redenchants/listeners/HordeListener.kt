@@ -93,7 +93,8 @@ class HordeListener : Listener {
     }
 
     companion object {
-        val hordeKey = NamespacedKey(RedEnchants.instance, "isHorde")
+        val hordeKey = NamespacedKey(RedEnchants.instance, "is_horde_mob")
+
         private val hordeMobTypes = listOf(
             EntityType.ZOMBIE,
             EntityType.HUSK,

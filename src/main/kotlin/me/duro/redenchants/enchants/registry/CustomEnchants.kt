@@ -60,6 +60,7 @@ object CustomEnchants {
     val HAMMER = HammerEnchant()
     val HASTE = HasteEnchant()
     val SPIKED_HOOK = SpikedHookEnchant()
+    val BEJEWELED = BejeweledEnchant()
 
     val allEnchants = listOf<RedEnchant>(
         TELEPATHY,
@@ -89,6 +90,7 @@ object CustomEnchants {
         HAMMER,
         HASTE,
         SPIKED_HOOK,
+        BEJEWELED,
     )
 
     val enchantsMap = hashMapOf<Class<out EnchantType>, MutableSet<in RedEnchant>>()
@@ -123,7 +125,7 @@ object CustomEnchants {
         val enchantClass = enchant.javaClass
 
         if (enchantClass.interfaces.isEmpty()) {
-            println("Enchant does not implement any interfaces.")
+            println("${enchantClass.simpleName} Enchant does not implement any interfaces.")
             return false
         }
 

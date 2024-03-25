@@ -27,7 +27,7 @@ private val coordOffsets = arrayOf(
 
 class HammerEnchant : RedEnchant(
     name = "hammer",
-    description = { _ -> "Breaks a 3x3 of blocks." },
+    description = { "Breaks a 3x3 of blocks." },
     canEnchant = { i -> RedEnchantTarget.TOOL.match(i) },
     enchantRarity = RedEnchantRarity.EXOTIC,
 ), BlockBreakEnchant {

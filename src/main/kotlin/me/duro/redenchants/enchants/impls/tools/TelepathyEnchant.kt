@@ -19,7 +19,7 @@ import org.bukkit.inventory.ItemStack
 
 class TelepathyEnchant : RedEnchant(
     name = "telepathy",
-    description = { _ -> "Moves all blocks loot directly to your inventory." },
+    description = { "Moves all blocks loot directly to your inventory." },
     canEnchant = { i -> RedEnchantTarget.TOOL.match(i) || RedEnchantTarget.SWORD.match(i) },
     enchantRarity = RedEnchantRarity.COMMON,
 ), BlockDropEnchant, DeathEnchant {

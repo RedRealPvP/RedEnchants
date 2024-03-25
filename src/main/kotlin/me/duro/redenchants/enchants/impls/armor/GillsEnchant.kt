@@ -13,7 +13,7 @@ import org.bukkit.potion.PotionEffectType
 
 class GillsEnchant : RedEnchant(
     name = "gills",
-    description = { _ -> "Grants water breathing effect." },
+    description = { "Grants water breathing effect." },
     canEnchant = { i -> RedEnchantTarget.HELMET.match(i) },
     enchantRarity = RedEnchantRarity.RARE,
 ), Potioned, PassiveEnchant {

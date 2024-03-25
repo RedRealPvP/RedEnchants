@@ -12,3 +12,6 @@ commands:
     description: Souls Command
   horde:
     description: Horde Command
+  crystal:
+    description: Crystal Command
+    aliases: [crystals, rc]

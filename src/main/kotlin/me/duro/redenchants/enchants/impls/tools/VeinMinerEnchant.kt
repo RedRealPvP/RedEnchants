@@ -32,7 +32,7 @@ private val validOres = mutableSetOf<Material>().apply {
 
 class VeinMinerEnchant : RedEnchant(
     name = "vein-miner",
-    description = { _ -> "Mines a vein of ores." },
+    description = { "Mines a vein of ores." },
     canEnchant = { i -> RedEnchantTarget.PICKAXE.match(i) },
     enchantRarity = RedEnchantRarity.FABULOUS
 ), BlockBreakEnchant {

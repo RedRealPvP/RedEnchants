@@ -7,15 +7,13 @@ import me.duro.redenchants.commands.HordeCommand
 import me.duro.redenchants.commands.RedEnchantsCommand
 import me.duro.redenchants.commands.SoulsCommand
 import me.duro.redenchants.enchants.registry.CustomEnchants
-import me.duro.redenchants.listeners.GUIListener
-import me.duro.redenchants.listeners.HordeListener
 import me.duro.redenchants.tasks.HordeTask
 import me.duro.redenchants.configs.Config
 import me.duro.redenchants.utils.SoulsManager
 import me.duro.redenchants.apis.SoulsPlaceholder
 import me.duro.redenchants.apis.VaultHook
-import me.duro.redenchants.listeners.EnchantListener
-import me.duro.redenchants.listeners.AirdropListener
+import me.duro.redenchants.commands.CrystalCommand
+import me.duro.redenchants.listeners.*
 import me.duro.redenchants.npcs.NPCRegistry
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -41,11 +39,14 @@ class RedEnchants : JavaPlugin() {
         getCommand("redenchants")?.setExecutor(RedEnchantsCommand())
         getCommand("souls")?.setExecutor(SoulsCommand())
         getCommand("horde")?.setExecutor(HordeCommand())
+        getCommand("crystal")?.setExecutor(CrystalCommand())
 
         server.pluginManager.registerEvents(HordeListener(), this)
         server.pluginManager.registerEvents(GUIListener(), this)
         server.pluginManager.registerEvents(EnchantListener(), this)
         server.pluginManager.registerEvents(AirdropListener(), this)
+        server.pluginManager.registerEvents(CrystalListener(), this)
+        server.pluginManager.registerEvents(FishingListener(), this)
 
         try {
             val world = Bukkit.getWorld(config.data.horde.spawn.world) ?: Bukkit.getWorlds()[0]

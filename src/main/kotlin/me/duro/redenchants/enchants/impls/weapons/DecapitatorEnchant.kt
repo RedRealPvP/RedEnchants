@@ -21,7 +21,7 @@ private val config = RedEnchants.instance.config.data.decapitator
 
 class DecapitatorEnchant : RedEnchant(
     name = "decapitator",
-    description = { _ -> "Drops player heads upon killing them." },
+    description = { "Drops player heads upon killing them." },
     canEnchant = { i -> RedEnchantTarget.AXE.match(i) },
     enchantRarity = RedEnchantRarity.EXOTIC,
 ), DeathEnchant {

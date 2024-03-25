@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack
 
 class SmeltingEnchant : RedEnchant(
     name = "smelting",
-    description = { _ -> "Smelts ores upon break." },
+    description = { "Smelts ores upon break." },
     canEnchant = { i -> RedEnchantTarget.PICKAXE.match(i) },
     enchantRarity = RedEnchantRarity.FABULOUS
 ), BlockBreakEnchant {

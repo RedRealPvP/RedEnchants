@@ -13,7 +13,7 @@ import org.bukkit.potion.PotionEffectType
 
 class NocturnalEnchant : RedEnchant(
     name = "nocturnal",
-    description = { _ -> "Grants night vision effect." },
+    description = { "Grants night vision effect." },
     canEnchant = { i -> RedEnchantTarget.HELMET.match(i) },
     enchantRarity = RedEnchantRarity.UNCOMMON,
 ), Potioned, PassiveEnchant {

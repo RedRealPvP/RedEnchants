@@ -17,7 +17,7 @@ private val validCrops =
 
 class HarvestEnchant : RedEnchant(
     name = "harvest",
-    description = { _ -> "Right click to harvest and replant crops." },
+    description = { "Right click to harvest and replant crops." },
     canEnchant = { i -> RedEnchantTarget.HOE.match(i) },
     enchantRarity = RedEnchantRarity.COMMON,
 ), InteractEnchant {
